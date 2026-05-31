@@ -6,7 +6,7 @@ import { models } from '../models/index.js';
 import { generateOTP, getOTPExpiration } from '../utils/otp.js';
 import { isOTPVerified } from './otp.service.js';
 
-export const registerUser = async ({ email, password, password_hash, full_name, phone_number, role }) => {
+export const registerUser = async ({ email, password, password_hash, first_name, last_name, phone, role }) => {
   try {
     const rawPassword = password || password_hash;
     if (!rawPassword) throw new AppError('Password is required for registration', 400);
@@ -16,22 +16,27 @@ export const registerUser = async ({ email, password, password_hash, full_name, 
       throw new AppError('Email already exists. Please use another email or log in instead.', 409);
     }
 
-    const existingPhone = await models.User.findOne({ where: { phone_number } });
-    if (existingPhone) {
-      throw new AppError('Your phone number already exists. Please use another phone number.', 409);
+    if (phone) {
+      const existingPhone = await models.User.findOne({ where: { phone } });
+      if (existingPhone) {
+        throw new AppError('Your phone number already exists. Please use another phone number.', 409);
+      }
     }
 
     if (!role) throw new AppError('Role is required for registration', 400);
 
-    const roleRecord = await models.Role.findOne({ where: { role_name: role } });
-    if (!roleRecord) throw new AppError(`Role '${role}' not found`, 400);
+    const validRoles = ['OWNER', 'TENANT', 'AGENT', 'ADMIN'];
+    if (!validRoles.includes(role)) {
+      throw new AppError(`Role '${role}' is invalid. Valid roles are: ${validRoles.join(', ')}`, 400);
+    }
 
     const user = await models.User.create({
       email,
       password_hash: await hashPassword(rawPassword),
-      full_name,
-      phone_number,
-      role_id: roleRecord.id,
+      first_name,
+      last_name,
+      phone,
+      role,
     });
 
     // Generate and persist OTP; for development we will return the code in the API response
@@ -63,7 +68,6 @@ export const registerUser = async ({ email, password, password_hash, full_name, 
 export const loginUser = async ({ email, password_hash, rememberMe }, req) => {
   const user = await models.User.findOne({
     where: { email },
-    include: models.Role,
   });
   if (!user) throw new AppError("Invalid email or password. Please check your credentials and try again.", 401);
 
@@ -132,8 +136,8 @@ export const rotateRefreshToken = async (token, req) => {
 
     const userId = payload.user_id;
 
-    // Get user with role
-    const user = await models.User.findByPk(userId, { include: models.Role });
+    // Get user
+    const user = await models.User.findByPk(userId);
     if (!user) throw new AppError('User not found', 401);
 
     // Revoke the old token
@@ -146,7 +150,7 @@ export const rotateRefreshToken = async (token, req) => {
     const accessToken = jwt.sign(
       {
         user_id: user.id,
-        role_name: user.Role.role_name
+        role: user.role
       },
       process.env.JWT_SECRET,
       { expiresIn: '15m' }
@@ -184,7 +188,7 @@ const signAccessToken = user =>
   jwt.sign(
     {
       user_id: user.id,
-      role_name: user.Role.role_name
+      role: user.role
     },
     process.env.JWT_SECRET,
     { expiresIn: '15m' }

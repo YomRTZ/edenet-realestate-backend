@@ -25,18 +25,9 @@ export const verifyToken = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     console.log('[verifyToken] Decoded JWT:', decoded);
     
-    // Handle both 'role' and 'role_name' keys for backward compatibility
-    // Also handle array vs string for role
-    let userRole = decoded.role_name || decoded.role;
-    
-    // If role is an array, use the first element
-    if (Array.isArray(userRole)) {
-      userRole = userRole[0];
-    }
-    
     req.user = {
       id: decoded.user_id,
-      role: userRole
+      role: decoded.role
     };
     
     console.log('[verifyToken] req.user set:', req.user);

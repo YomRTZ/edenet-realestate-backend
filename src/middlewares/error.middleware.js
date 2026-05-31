@@ -14,7 +14,7 @@ export const errorHandler = (err, req, res, next) => {
 
     if (fields.includes('email')) {
       message = 'Email already exists. Please use another email or log in instead.';
-    } else if (fields.includes('phone_number')) {
+    } else if (fields.includes('phone')) {
       message = 'Your phone number already exists. Please use another phone number.';
     } else if (fields.length > 0) {
       message = `Duplicate value for: ${fields.join(', ')}`;

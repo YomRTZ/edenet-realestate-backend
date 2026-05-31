@@ -1,7 +1,6 @@
 import * as service from '../services/auth.service.js'
 import { catchAsync } from '../utils/catchAsync.js'
 import { AppError } from '../utils/AppError.js'
-import { models } from '../models/index.js'
 
 export const register = catchAsync(async (req, res) => {
   try {
@@ -9,12 +8,12 @@ export const register = catchAsync(async (req, res) => {
     const user = result.user || result;
     const otp = result.otp;
 
-    const role = await models.Role.findByPk(user.role_id)
-
     const responseData = {
       id: user.id,
       email: user.email,
-      role: [role?.role_name],
+      first_name: user.first_name,
+      last_name: user.last_name,
+      role: user.role,
       message: 'Registration successful.',
     };
 
@@ -69,8 +68,9 @@ export const login = catchAsync(async (req, res) => {
         user: {
           id: user.id,
           email: user.email,
-          full_name: user.full_name,
-          role: [user.Role.role_name],
+          first_name: user.first_name,
+          last_name: user.last_name,
+          role: user.role,
         },
       },
     })

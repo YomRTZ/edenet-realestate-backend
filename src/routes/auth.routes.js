@@ -24,7 +24,7 @@ router.post('/otp/verify', validate(verifyOTPSchema), verifyOTP);
 /* Get current user */
 router.get('/me', verifyToken, async (req, res, next) => {
   try {
-    const user = await models.User.findByPk(req.user.id, { include: models.Role });
+    const user = await models.User.findByPk(req.user.id);
     if (!user) throw new AppError('User not found', 404);
 
     res.json({
@@ -32,8 +32,13 @@ router.get('/me', verifyToken, async (req, res, next) => {
       data: {
         id: user.id,
         email: user.email,
-        full_name: user.full_name,
-        role: [user.Role?.role_name],
+        first_name: user.first_name,
+        last_name: user.last_name,
+        phone: user.phone,
+        role: user.role,
+        is_verified: user.is_verified,
+        is_verified_agent: user.is_verified_agent,
+        profile_image: user.profile_image,
       },
     });
   } catch (error) {

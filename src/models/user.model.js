@@ -9,20 +9,77 @@ export const User = sequelize.define('User', {
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
   },
-  role_id: {
-    type: DataTypes.UUID,
+  first_name: {
+    type: DataTypes.STRING(100),
     allowNull: false,
-    references: {
-      model: 'roles',
-      key: 'id'
-    }
   },
-  
-  email: { type: DataTypes.STRING, allowNull: false, unique: true },
-  phone_number: { type: DataTypes.STRING, allowNull: false, unique: true },
-  password_hash: { type: DataTypes.STRING, allowNull: false },
-  full_name: { type: DataTypes.STRING, allowNull: false },
-  city: { type: DataTypes.STRING, allowNull: true },
-  country: { type: DataTypes.STRING, allowNull: true },
-  gender: { type: DataTypes.ENUM('male', 'female', 'other'), allowNull: true },
-}, { tableName: 'users', timestamps: true });
+  last_name: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+  },
+  email: {
+    type: DataTypes.STRING(255),
+    allowNull: false,
+    unique: true,
+  },
+  phone: {
+    type: DataTypes.STRING(30),
+    allowNull: true,
+  },
+  password_hash: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+  },
+  role: {
+    type: DataTypes.ENUM('OWNER', 'TENANT', 'AGENT', 'ADMIN'),
+    allowNull: false,
+  },
+  profile_image: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  national_id: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+  },
+  date_of_birth: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+  is_verified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
+  is_verified_agent: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
+  agent_license_number: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+  },
+  agency_name: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+  },
+  preferred_language: {
+    type: DataTypes.STRING(10),
+    defaultValue: 'en',
+  },
+  two_factor_enabled: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
+  last_login_at: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+  deleted_at: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+}, { 
+  tableName: 'users', 
+  timestamps: true,
+  paranoid: true,
+});
