@@ -1,0 +1,47 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: talent-db
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-talent_db}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - talent-network
+
+  api:
+    build: .
+    container_name: talent-api
+    ports:
+      - "${PORT:-5000}:5000"
+    environment:
+      PORT: ${PORT:-5000}
+      DB_HOST: db
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME:-talent_db}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      NODE_ENV: production
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5174}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5174}
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+    command: sh -c "npm run sync && npm run seed && node src/server.js"
+    networks:
+      - talent-network
+
+volumes:
+  pgdata:
+
+networks:
+  talent-network:
