@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import { User } from '../models/user.model.js';
 import { Role } from '../models/role.model.js';
 import { AppError } from '../utils/AppError.js';
+import { ROLES } from '../constants/seeds.js';
 
 export const verifyToken = async (req, res, next) => {
   // First, try to get token from Authorization header
@@ -81,12 +82,10 @@ export const verifyTokenFromRequest = async (req) => {
 // Helper function to check if user is admin
 export const isUserAdmin = (user) => {
   if (!user) return false;
-  const role = user.role;
+  let role = user.role;
+  if (Array.isArray(role)) role = role[0];
   if (typeof role === 'string') {
-    return role === 'admin';
-  }
-  if (Array.isArray(role)) {
-    return role.includes('admin');
+    return role.toUpperCase() === ROLES.ADMIN;
   }
   return false;
 };
@@ -99,8 +98,10 @@ export const permit = (...roles) => (req, res, next) => {
   const userRole = req.user.role;
   const userRoles = Array.isArray(userRole) ? userRole : [userRole];
   
+  const normalizedRequired = roles.map(r => String(r).toUpperCase());
+  const userRolesNormalized = userRoles.map(r => String(r).toUpperCase());
   // Check if user has any of the required roles
-  const hasRole = userRoles.some(role => roles.includes(role));
+  const hasRole = userRolesNormalized.some(role => normalizedRequired.includes(role));
   
   if (!hasRole) {
     return next(new AppError("You don't have permission to perform this action.", 403));

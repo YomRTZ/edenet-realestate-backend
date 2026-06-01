@@ -1,15 +1,16 @@
 import sequelize from '../config/database.js';
+import { PROPERTY_TYPES } from '../constants/seeds.js';
 
 export const seedPropertyTypes = async () => {
   try {
     const propertyTypes = [
-      { name: 'HOUSE', description: 'Single family house' },
-      { name: 'APARTMENT', description: 'Multi-unit apartment building' },
-      { name: 'CONDO', description: 'Condominium unit' },
-      { name: 'LAND', description: 'Vacant land/plot' },
-      { name: 'COMMERCIAL', description: 'Commercial property' },
-      { name: 'TOWNHOUSE', description: 'Townhouse' },
-      { name: 'FARM', description: 'Agricultural land/farm' }
+      { name: PROPERTY_TYPES.HOUSE, description: 'Single family house' },
+      { name: PROPERTY_TYPES.APARTMENT, description: 'Multi-unit apartment building' },
+      { name: PROPERTY_TYPES.CONDO, description: 'Condominium unit' },
+      { name: PROPERTY_TYPES.LAND, description: 'Vacant land/plot' },
+      { name: PROPERTY_TYPES.COMMERCIAL, description: 'Commercial property' },
+      { name: PROPERTY_TYPES.TOWNHOUSE, description: 'Townhouse' },
+      { name: PROPERTY_TYPES.FARM, description: 'Agricultural land/farm' }
     ];
 
     console.log('✓ Property Types seeded');

@@ -78,13 +78,7 @@ module.exports = {
       name: 'idx_showings_property',
     });
 
-    await queryInterface.addIndex('property_reviews', ['rating', 'is_verified_purchase'], {
-      name: 'idx_property_reviews_rating',
-    });
-
-    await queryInterface.addIndex('user_reviews', ['reviewee_id', 'rating'], {
-      name: 'idx_user_reviews_reviewee',
-    });
+    // review indexes are now managed by the unified reviews table migration
 
     await queryInterface.addIndex('notifications', ['user_id', 'is_read', 'created_at'], {
       name: 'idx_notifications_user_read',
@@ -118,8 +112,7 @@ module.exports = {
     await queryInterface.removeIndex('sale_transactions', 'idx_sale_transactions_seller');
     await queryInterface.removeIndex('showings', 'idx_showings_datetime');
     await queryInterface.removeIndex('showings', 'idx_showings_property');
-    await queryInterface.removeIndex('property_reviews', 'idx_property_reviews_rating');
-    await queryInterface.removeIndex('user_reviews', 'idx_user_reviews_reviewee');
+    // review indexes removed or replaced by the unified reviews migration
     await queryInterface.removeIndex('notifications', 'idx_notifications_user_read');
     await queryInterface.removeIndex('saved_searches', 'idx_saved_searches_filters');
     await queryInterface.sequelize.query('DROP INDEX IF EXISTS idx_properties_search');

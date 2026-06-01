@@ -1,17 +1,9 @@
-import * as service from '../services/propertyView.service.js';
-import { catchAsync } from '../utils/catchAsync.js';
+// PropertyView feature removed; lightweight placeholders respond 410 Gone
 
-export const createPropertyView = catchAsync(async (req, res) => {
-  const view = await service.createPropertyView(req.params.propertyId, req.body);
-  res.status(201).json({ success: true, message: 'View recorded', data: view });
-});
+const featureRemoved = (req, res) => {
+  res.status(410).json({ success: false, message: 'PropertyView feature removed' });
+};
 
-export const getPropertyViews = catchAsync(async (req, res) => {
-  const views = await service.getPropertyViews(req.params.propertyId, req.query);
-  res.json({ success: true, data: views });
-});
-
-export const getUserViews = catchAsync(async (req, res) => {
-  const views = await service.getUserViews(req.params.userId, req.query);
-  res.json({ success: true, data: views });
-});
+export const createPropertyView = featureRemoved;
+export const getPropertyViews = featureRemoved;
+export const getUserViews = featureRemoved;

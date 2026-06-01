@@ -5,7 +5,7 @@ A Node.js + Express backend for a real estate management system with Role-Based 
 ## Key Features
 
 - Public user signup with default `tenant` role
-- Role-based account creation with `admin`, `tenant`, `agent`, `owner` roles
+- Role-based account creation with `admin`, `tenant`, `owner` roles
 - Access token + refresh token authentication
 - Secure `HttpOnly` refresh token cookies
 - Admin-only and authenticated user routes
@@ -55,7 +55,10 @@ JWT_SECRET=CHANGE_ME_ACCESS_SECRET
 JWT_REFRESH_SECRET=CHANGE_ME_REFRESH_SECRET
 
 FRONTEND_URL=http://localhost:3000
+DOCUMENT_ENCRYPTION_KEY=REPLACE_WITH_BASE64_32_BYTE_KEY
 ```
+
+Add `DOCUMENT_ENCRYPTION_KEY` (base64-encoded 32-byte key) to encrypt/decrypt uploaded documents stored under `uploads/documents_encrypted`.
 
 > Generate secure secrets with:
 > `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"`

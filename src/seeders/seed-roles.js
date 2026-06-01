@@ -1,14 +1,14 @@
 import { Role } from '../models/role.model.js';
 import sequelize from '../config/database.js';
+import { ROLES } from '../constants/seeds.js';
 
 export const seedRoles = async () => {
   await sequelize.authenticate();
 
   const roles = [
-    { role_name: 'admin', description: 'System administrator with full access' },
-    { role_name: 'tenant', description: 'Tenant user with standard access' },
-    { role_name: 'agent', description: 'Agent user for sales or support operations' },
-    { role_name: 'owner', description: 'Owner user with elevated business privileges' }
+    { role_name: ROLES.ADMIN, description: 'System administrator with full access' },
+    { role_name: ROLES.TENANT, description: 'Tenant user with standard access' },
+    { role_name: ROLES.OWNER, description: 'Owner user with elevated business privileges' }
   ];
 
   for (const roleData of roles) {

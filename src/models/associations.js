@@ -17,6 +17,19 @@ models.RefreshToken.belongsTo(models.User, {
 });
 
 /* =====================
+   User Roles
+===================== */
+models.Role.hasMany(models.User, {
+  foreignKey: 'role_id',
+  as: 'users',
+});
+
+models.User.belongsTo(models.Role, {
+  foreignKey: 'role_id',
+  as: 'roleInfo',
+});
+
+/* =====================
    Properties
 ===================== */
 models.User.hasMany(models.Property, {
@@ -28,20 +41,6 @@ models.User.hasMany(models.Property, {
 models.Property.belongsTo(models.User, {
   foreignKey: 'owner_id',
   as: 'owner',
-});
-
-/* =====================
-   Property Images
-===================== */
-models.Property.hasMany(models.PropertyImage, {
-  foreignKey: 'property_id',
-  onDelete: 'CASCADE',
-  as: 'images',
-});
-
-models.PropertyImage.belongsTo(models.Property, {
-  foreignKey: 'property_id',
-  as: 'property',
 });
 
 /* =====================
@@ -59,44 +58,44 @@ models.PropertyFeature.belongsTo(models.Property, {
 });
 
 /* =====================
-   Property Documents
+   Documents
 ===================== */
-models.Property.hasMany(models.PropertyDocument, {
+models.User.hasMany(models.Document, {
+  foreignKey: 'uploaded_by',
+  onDelete: 'RESTRICT',
+  as: 'uploadedDocuments',
+});
+
+models.Document.belongsTo(models.User, {
+  foreignKey: 'uploaded_by',
+  as: 'uploader',
+});
+
+models.Property.hasMany(models.Document, {
   foreignKey: 'property_id',
   onDelete: 'CASCADE',
   as: 'documents',
 });
 
-models.PropertyDocument.belongsTo(models.Property, {
+models.Document.belongsTo(models.Property, {
   foreignKey: 'property_id',
   as: 'property',
+});
+
+models.User.hasMany(models.Document, {
+  foreignKey: 'verified_by',
+  onDelete: 'SET NULL',
+  as: 'verifiedDocuments',
+});
+
+models.Document.belongsTo(models.User, {
+  foreignKey: 'verified_by',
+  as: 'verifier',
 });
 
 /* =====================
    Property Verifications
 ===================== */
-models.Property.hasMany(models.PropertyVerification, {
-  foreignKey: 'property_id',
-  onDelete: 'CASCADE',
-  as: 'verifications',
-});
-
-models.PropertyVerification.belongsTo(models.Property, {
-  foreignKey: 'property_id',
-  as: 'property',
-});
-
-models.User.hasMany(models.PropertyVerification, {
-  foreignKey: 'verified_by',
-  onDelete: 'CASCADE',
-  as: 'verificationRecords',
-});
-
-models.PropertyVerification.belongsTo(models.User, {
-  foreignKey: 'verified_by',
-  as: 'verifier',
-});
-
 /* =====================
    Rental Agreements
 ===================== */
@@ -303,20 +302,6 @@ models.Showing.belongsTo(models.User, {
 });
 
 /* =====================
-   Mortgages
-===================== */
-models.Property.hasMany(models.Mortgage, {
-  foreignKey: 'property_id',
-  onDelete: 'CASCADE',
-  as: 'mortgages',
-});
-
-models.Mortgage.belongsTo(models.Property, {
-  foreignKey: 'property_id',
-  as: 'property',
-});
-
-/* =====================
    Escrow Transactions
 ===================== */
 models.SaleTransaction.hasMany(models.EscrowTransaction, {
@@ -401,35 +386,41 @@ models.PropertyInquiry.belongsTo(models.User, {
   foreignKey: 'receiver_id',
   as: 'receiver',
 });
-
 /* =====================
-   Property Reviews
+   Favorites / Saved Properties
 ===================== */
-models.Property.hasMany(models.PropertyReview, {
+models.Property.hasMany(models.Review, {
   foreignKey: 'property_id',
-  onDelete: 'CASCADE',
-  as: 'reviews',
-});
-
-models.PropertyReview.belongsTo(models.Property, {
-  foreignKey: 'property_id',
-  as: 'property',
-});
-
-models.User.hasMany(models.PropertyReview, {
-  foreignKey: 'user_id',
   onDelete: 'CASCADE',
   as: 'propertyReviews',
 });
 
-models.PropertyReview.belongsTo(models.User, {
-  foreignKey: 'user_id',
-  as: 'user',
+models.Review.belongsTo(models.Property, {
+  foreignKey: 'property_id',
+  as: 'property',
 });
 
-/* =====================
-   Favorites / Saved Properties
-===================== */
+models.User.hasMany(models.Review, {
+  foreignKey: 'reviewer_id',
+  onDelete: 'CASCADE',
+  as: 'writtenReviews',
+});
+
+models.Review.belongsTo(models.User, {
+  foreignKey: 'reviewer_id',
+  as: 'reviewer',
+});
+
+models.User.hasMany(models.Review, {
+  foreignKey: 'reviewee_id',
+  onDelete: 'CASCADE',
+  as: 'receivedReviews',
+});
+
+models.Review.belongsTo(models.User, {
+  foreignKey: 'reviewee_id',
+  as: 'reviewee',
+});
 models.User.hasMany(models.Favorite, {
   foreignKey: 'user_id',
   onDelete: 'CASCADE',
@@ -450,31 +441,6 @@ models.Property.hasMany(models.Favorite, {
 models.Favorite.belongsTo(models.Property, {
   foreignKey: 'property_id',
   as: 'property',
-});
-
-/* =====================
-   User Reviews
-===================== */
-models.User.hasMany(models.UserReview, {
-  foreignKey: 'reviewer_id',
-  onDelete: 'CASCADE',
-  as: 'writtenUserReviews',
-});
-
-models.UserReview.belongsTo(models.User, {
-  foreignKey: 'reviewer_id',
-  as: 'reviewer',
-});
-
-models.User.hasMany(models.UserReview, {
-  foreignKey: 'reviewee_id',
-  onDelete: 'CASCADE',
-  as: 'receivedUserReviews',
-});
-
-models.UserReview.belongsTo(models.User, {
-  foreignKey: 'reviewee_id',
-  as: 'reviewee',
 });
 
 /* =====================
@@ -519,63 +485,7 @@ models.SavedSearch.belongsTo(models.User, {
 /* =====================
    Property Comparisons
 ===================== */
-models.User.hasMany(models.PropertyComparison, {
-  foreignKey: 'user_id',
-  onDelete: 'CASCADE',
-  as: 'propertyComparisons',
-});
-
-models.PropertyComparison.belongsTo(models.User, {
-  foreignKey: 'user_id',
-  as: 'user',
-});
-
-/* =====================
-   Property Views / Analytics
-===================== */
-models.Property.hasMany(models.PropertyView, {
-  foreignKey: 'property_id',
-  onDelete: 'CASCADE',
-  as: 'views',
-});
-
-models.PropertyView.belongsTo(models.Property, {
-  foreignKey: 'property_id',
-  as: 'property',
-});
-
-models.User.hasMany(models.PropertyView, {
-  foreignKey: 'user_id',
-  onDelete: 'SET NULL',
-  as: 'propertyViews',
-});
-
-models.PropertyView.belongsTo(models.User, {
-  foreignKey: 'user_id',
-  as: 'user',
-});
-
-models.User.hasMany(models.UserDocument, {
-  foreignKey: 'user_id',
-  onDelete: 'CASCADE',
-  as: 'documents',
-});
-
-models.UserDocument.belongsTo(models.User, {
-  foreignKey: 'user_id',
-  as: 'user',
-});
-
-models.User.hasMany(models.UserDocument, {
-  foreignKey: 'verified_by',
-  onDelete: 'SET NULL',
-  as: 'verifiedDocuments',
-});
-
-models.UserDocument.belongsTo(models.User, {
-  foreignKey: 'verified_by',
-  as: 'verifier',
-});
+/* PropertyComparison and PropertyView tables removed; related associations deleted. */
 
 /* =====================
    Notifications

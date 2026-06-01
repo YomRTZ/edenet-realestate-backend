@@ -1,7 +1,8 @@
 import sequelize from '../config/database.js';
 import { DataTypes } from 'sequelize';
+import { TRANSACTION_TYPES } from '../constants/seeds.js';
 
-export const UserReview = sequelize.define('UserReview', {
+export const Review = sequelize.define('Review', {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
@@ -19,7 +20,7 @@ export const UserReview = sequelize.define('UserReview', {
   },
   reviewee_id: {
     type: DataTypes.UUID,
-    allowNull: false,
+    allowNull: true,
     references: {
       model: 'users',
       key: 'id',
@@ -27,13 +28,23 @@ export const UserReview = sequelize.define('UserReview', {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   },
+  property_id: {
+    type: DataTypes.UUID,
+    allowNull: true,
+    references: {
+      model: 'properties',
+      key: 'id',
+    },
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  },
   transaction_type: {
-    type: DataTypes.ENUM('SALE', 'RENTAL'),
-    allowNull: false,
+    type: DataTypes.ENUM(...Object.values(TRANSACTION_TYPES)),
+    allowNull: true,
   },
   transaction_id: {
     type: DataTypes.UUID,
-    allowNull: false,
+    allowNull: true,
   },
   rating: {
     type: DataTypes.INTEGER,
@@ -47,10 +58,20 @@ export const UserReview = sequelize.define('UserReview', {
     type: DataTypes.TEXT,
     allowNull: false,
   },
+  is_verified_purchase: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
+  helpful_count: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+  },
 }, {
-  tableName: 'user_reviews',
+  tableName: 'reviews',
   timestamps: true,
   createdAt: 'created_at',
-  updatedAt: false,
+  updatedAt: 'updated_at',
   underscored: true,
 });

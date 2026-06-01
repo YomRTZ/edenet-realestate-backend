@@ -1,5 +1,6 @@
 import sequelize from '../config/database.js';
 import { DataTypes } from 'sequelize';
+import { TRANSACTION_STATUS } from '../constants/seeds.js';
 
 export const SaleTransaction = sequelize.define('SaleTransaction', {
   id: {
@@ -96,9 +97,9 @@ export const SaleTransaction = sequelize.define('SaleTransaction', {
     allowNull: true,
   },
   transaction_status: {
-    type: DataTypes.ENUM('PENDING', 'UNDER_CONTRACT', 'CLOSED', 'CANCELLED'),
+    type: DataTypes.ENUM(...Object.values(TRANSACTION_STATUS)),
     allowNull: false,
-    defaultValue: 'PENDING',
+    defaultValue: TRANSACTION_STATUS.NEGOTIATION,
   },
 }, {
   tableName: 'sale_transactions',

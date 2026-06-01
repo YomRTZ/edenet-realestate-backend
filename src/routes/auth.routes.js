@@ -37,7 +37,6 @@ router.get('/me', verifyToken, async (req, res, next) => {
         phone: user.phone,
         role: user.role,
         is_verified: user.is_verified,
-        is_verified_agent: user.is_verified_agent,
         profile_image: user.profile_image,
       },
     });

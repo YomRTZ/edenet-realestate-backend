@@ -1,12 +1,13 @@
 import sequelize from '../config/database.js';
+import { MAINTENANCE_PRIORITY } from '../constants/seeds.js';
 
 export const seedMaintenancePriority = async () => {
   try {
     const maintenancePriority = [
-      { name: 'LOW', description: 'Low priority maintenance' },
-      { name: 'MEDIUM', description: 'Medium priority maintenance' },
-      { name: 'HIGH', description: 'High priority maintenance' },
-      { name: 'URGENT', description: 'Urgent maintenance' }
+      { name: MAINTENANCE_PRIORITY.LOW, description: 'Low priority maintenance' },
+      { name: MAINTENANCE_PRIORITY.MEDIUM, description: 'Medium priority maintenance' },
+      { name: MAINTENANCE_PRIORITY.HIGH, description: 'High priority maintenance' },
+      { name: MAINTENANCE_PRIORITY.URGENT, description: 'Urgent maintenance' }
     ];
 
     console.log('✓ Maintenance Priority seeded');

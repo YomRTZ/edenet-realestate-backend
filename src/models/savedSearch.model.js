@@ -1,5 +1,6 @@
 import sequelize from '../config/database.js';
 import { DataTypes } from 'sequelize';
+import { ALERT_FREQUENCY } from '../constants/seeds.js';
 
 export const SavedSearch = sequelize.define('SavedSearch', {
   id: {
@@ -26,8 +27,8 @@ export const SavedSearch = sequelize.define('SavedSearch', {
     allowNull: false,
   },
   alert_frequency: {
-    type: DataTypes.ENUM('IMMEDIATE', 'DAILY', 'WEEKLY', 'MONTHLY'),
-    defaultValue: 'IMMEDIATE',
+    type: DataTypes.ENUM(...Object.values(ALERT_FREQUENCY)),
+    defaultValue: ALERT_FREQUENCY.IMMEDIATE,
   },
   last_triggered_at: {
     type: DataTypes.DATE,

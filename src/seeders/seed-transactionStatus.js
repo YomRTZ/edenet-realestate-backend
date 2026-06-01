@@ -1,13 +1,14 @@
 import sequelize from '../config/database.js';
+import { TRANSACTION_STATUS } from '../constants/seeds.js';
 
 export const seedTransactionStatus = async () => {
   try {
     const transactionStatus = [
-      { name: 'NEGOTIATION', description: 'In negotiation phase' },
-      { name: 'CONTRACT', description: 'Contract signed' },
-      { name: 'SOLD', description: 'Transaction completed' },
-      { name: 'CANCELLED', description: 'Transaction cancelled' },
-      { name: 'CLOSED', description: 'Transaction closed' }
+      { name: TRANSACTION_STATUS.NEGOTIATION, description: 'In negotiation phase' },
+      { name: TRANSACTION_STATUS.CONTRACT, description: 'Contract signed' },
+      { name: TRANSACTION_STATUS.SOLD, description: 'Transaction completed' },
+      { name: TRANSACTION_STATUS.CANCELLED, description: 'Transaction cancelled' },
+      { name: TRANSACTION_STATUS.CLOSED, description: 'Transaction closed' }
     ];
 
     console.log('✓ Transaction Status seeded');

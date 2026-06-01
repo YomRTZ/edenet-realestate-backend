@@ -60,6 +60,11 @@ module.exports = {
     await queryInterface.addIndex('property_taxes', ['tax_year']);
     await queryInterface.addIndex('property_taxes', ['tax_paid']);
     await queryInterface.addIndex('property_taxes', ['tax_lien']);
+    await queryInterface.addConstraint('property_taxes', {
+      fields: ['property_id', 'tax_year'],
+      type: 'unique',
+      name: 'unique_property_tax_year',
+    });
   },
 
   async down(queryInterface) {

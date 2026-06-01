@@ -1,16 +1,17 @@
 import { models } from '../models/index.js';
 import { AppError } from '../utils/AppError.js';
 import { generateOTP, getOTPExpiration } from '../utils/otp.js';
+import { OTP_PURPOSES } from '../constants/seeds.js';
 // Email integration removed — OTP codes are persisted and returned by API in development
 
 const MAX_ATTEMPTS = 5;
 
 /* Request OTP for email */
-export const requestOTP = async (email, purpose = 'email_verification') => {
+export const requestOTP = async (email, purpose = OTP_PURPOSES.EMAIL_VERIFICATION) => {
   try {
     // Check if user exists
     const user = await models.User.findOne({ where: { email } });
-    if (!user && purpose !== 'email_verification') {
+    if (!user && purpose !== OTP_PURPOSES.EMAIL_VERIFICATION) {
       throw new AppError('User not found', 404);
     }
 
@@ -59,7 +60,7 @@ export const requestOTP = async (email, purpose = 'email_verification') => {
 };
 
 /* Verify OTP code */
-export const verifyOTP = async (email, code, purpose = 'email_verification') => {
+export const verifyOTP = async (email, code, purpose = OTP_PURPOSES.EMAIL_VERIFICATION) => {
   try {
     const otp = await models.OTP.findOne({
       where: {
@@ -108,7 +109,7 @@ export const verifyOTP = async (email, code, purpose = 'email_verification') => 
   }
 };
 
-export const checkOTP = async (email, purpose = 'email_verification') => {
+export const checkOTP = async (email, purpose = OTP_PURPOSES.EMAIL_VERIFICATION) => {
   try {
     const otp = await models.OTP.findOne({
       where: { email, purpose },
@@ -148,7 +149,7 @@ export const checkOTP = async (email, purpose = 'email_verification') => {
   }
 };
 
-export const declineOTP = async (email, purpose = 'email_verification') => {
+export const declineOTP = async (email, purpose = OTP_PURPOSES.EMAIL_VERIFICATION) => {
   try {
     const otp = await models.OTP.findOne({
       where: { email, purpose, is_verified: false },
@@ -173,7 +174,7 @@ export const declineOTP = async (email, purpose = 'email_verification') => {
 };
 
 /* Check if OTP is verified */
-export const isOTPVerified = async (email, purpose = 'email_verification') => {
+export const isOTPVerified = async (email, purpose = OTP_PURPOSES.EMAIL_VERIFICATION) => {
   try {
     const otp = await models.OTP.findOne({
       where: {

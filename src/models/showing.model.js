@@ -1,5 +1,6 @@
 import sequelize from '../config/database.js';
 import { DataTypes } from 'sequelize';
+import { SHOWING_STATUS } from '../constants/seeds.js';
 
 export const Showing = sequelize.define('Showing', {
   id: {
@@ -47,9 +48,9 @@ export const Showing = sequelize.define('Showing', {
     defaultValue: 30,
   },
   status: {
-    type: DataTypes.ENUM('REQUESTED', 'CONFIRMED', 'CANCELLED', 'COMPLETED', 'NO_SHOW'),
+    type: DataTypes.ENUM(...Object.values(SHOWING_STATUS)),
     allowNull: false,
-    defaultValue: 'REQUESTED',
+    defaultValue: SHOWING_STATUS.REQUESTED,
   },
   notes: {
     type: DataTypes.TEXT,

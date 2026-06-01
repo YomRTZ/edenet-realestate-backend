@@ -11,8 +11,7 @@ export const updateUser = async (userId, data) => {
     national_id,
     date_of_birth,
     preferred_language,
-    agency_name,
-    agent_license_number,
+    
     two_factor_enabled
   } = data;
 
@@ -28,8 +27,6 @@ export const updateUser = async (userId, data) => {
     if (date_of_birth !== undefined) user.date_of_birth = date_of_birth;
     if (preferred_language !== undefined) user.preferred_language = preferred_language;
     if (two_factor_enabled !== undefined) user.two_factor_enabled = two_factor_enabled;
-    if (agency_name !== undefined) user.agency_name = agency_name;
-    if (agent_license_number !== undefined) user.agent_license_number = agent_license_number;
 
     await user.save();
     return user;

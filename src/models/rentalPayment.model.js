@@ -1,5 +1,6 @@
 import sequelize from '../config/database.js';
 import { DataTypes } from 'sequelize';
+import { PAYMENT_STATUS } from '../constants/seeds.js';
 
 export const RentalPayment = sequelize.define('RentalPayment', {
   id: {
@@ -44,9 +45,9 @@ export const RentalPayment = sequelize.define('RentalPayment', {
     allowNull: true,
   },
   payment_status: {
-    type: DataTypes.ENUM('PENDING', 'PAID', 'OVERDUE', 'FAILED', 'REFUNDED'),
+    type: DataTypes.ENUM(...Object.values(PAYMENT_STATUS)),
     allowNull: false,
-    defaultValue: 'PENDING',
+    defaultValue: PAYMENT_STATUS.PENDING,
   },
   transaction_reference: {
     type: DataTypes.STRING(255),

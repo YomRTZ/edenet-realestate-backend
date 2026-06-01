@@ -1,9 +1,14 @@
 import { models } from '../models/index.js';
 import { AppError } from '../utils/AppError.js';
+import { getUploadDbPath, removeFile } from '../utils/fileHelper.js';
 
 /* Create a new property */
-export const createProperty = async (userId, data) => {
+export const createProperty = async (userId, data, file) => {
   try {
+    if (file) {
+      data.image_url = getUploadDbPath(file.filename);
+    }
+
     const property = await models.Property.create({
       ...data,
       owner_id: userId,
@@ -73,7 +78,7 @@ export const getPropertyById = async (propertyId) => {
 };
 
 /* Update property */
-export const updateProperty = async (propertyId, userId, data) => {
+export const updateProperty = async (propertyId, userId, data, file) => {
   try {
     const property = await models.Property.findByPk(propertyId);
 
@@ -81,7 +86,17 @@ export const updateProperty = async (propertyId, userId, data) => {
     if (property.owner_id !== userId) throw new AppError('Unauthorized: You can only update your own properties', 403);
     if (property.deleted_at) throw new AppError('Cannot update a deleted property', 400);
 
+    let previousImage = property.image_url;
+    if (file) {
+      data.image_url = getUploadDbPath(file.filename);
+    }
+
     await property.update(data);
+
+    if (file && previousImage && previousImage !== data.image_url) {
+      await removeFile(previousImage);
+    }
+
     return property;
   } catch (error) {
     console.error('[updateProperty] Error:', error.message);

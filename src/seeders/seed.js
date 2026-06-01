@@ -12,7 +12,6 @@ import { seedShowingStatus } from './seed-showingStatus.js'
 import { seedMaintenancePriority } from './seed-maintenancePriority.js'
 import { seedMaintenanceStatus } from './seed-maintenanceStatus.js'
 import { seedEscrowStatus } from './seed-escrowStatus.js'
-import { seedEnergyRating } from './seed-energyRating.js'
 import { seedAlertFrequency } from './seed-alertFrequency.js'
 
 const runSeeds = async () => {
@@ -34,7 +33,6 @@ const runSeeds = async () => {
     await seedMaintenancePriority()
     await seedMaintenanceStatus()
     await seedEscrowStatus()
-    await seedEnergyRating()
     await seedAlertFrequency()
 
     console.log('\n✅ All seeds completed successfully')

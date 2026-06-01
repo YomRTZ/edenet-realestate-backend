@@ -1,14 +1,15 @@
 import sequelize from '../config/database.js';
+import { SHOWING_STATUS } from '../constants/seeds.js';
 
 export const seedShowingStatus = async () => {
   try {
     const showingStatus = [
-      { name: 'PENDING', description: 'Showing pending' },
-      { name: 'CONFIRMED', description: 'Showing confirmed' },
-      { name: 'COMPLETED', description: 'Showing completed' },
-      { name: 'CANCELLED', description: 'Showing cancelled' },
-      { name: 'NO_SHOW', description: 'No show' },
-      { name: 'RESCHEDULED', description: 'Showing rescheduled' }
+      { name: SHOWING_STATUS.PENDING, description: 'Showing pending' },
+      { name: SHOWING_STATUS.CONFIRMED, description: 'Showing confirmed' },
+      { name: SHOWING_STATUS.COMPLETED, description: 'Showing completed' },
+      { name: SHOWING_STATUS.CANCELLED, description: 'Showing cancelled' },
+      { name: SHOWING_STATUS.NO_SHOW, description: 'No show' },
+      { name: SHOWING_STATUS.RESCHEDULED, description: 'Showing rescheduled' }
     ];
 
     console.log('✓ Showing Status seeded');

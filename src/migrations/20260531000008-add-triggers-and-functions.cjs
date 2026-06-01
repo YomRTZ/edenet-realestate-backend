@@ -3,28 +3,6 @@
 module.exports = {
   async up(queryInterface) {
     await queryInterface.sequelize.query(`
-      CREATE OR REPLACE FUNCTION check_primary_image()
-      RETURNS TRIGGER AS $$
-      BEGIN
-        IF NEW.is_primary = TRUE AND EXISTS (
-          SELECT 1 FROM property_images
-          WHERE property_id = NEW.property_id
-            AND is_primary = TRUE
-            AND id != NEW.id
-        ) THEN
-          RAISE EXCEPTION 'Property already has a primary image';
-        END IF;
-        RETURN NEW;
-      END;
-      $$ LANGUAGE plpgsql;
-
-      CREATE TRIGGER enforce_primary_image
-      BEFORE INSERT OR UPDATE ON property_images
-      FOR EACH ROW
-      EXECUTE FUNCTION check_primary_image();
-    `);
-
-    await queryInterface.sequelize.query(`
       CREATE OR REPLACE FUNCTION check_rental_overlap()
       RETURNS TRIGGER AS $$
       BEGIN
@@ -68,11 +46,6 @@ module.exports = {
   },
 
   async down(queryInterface) {
-    await queryInterface.sequelize.query(`
-      DROP TRIGGER IF EXISTS enforce_primary_image ON property_images;
-      DROP FUNCTION IF EXISTS check_primary_image();
-    `);
-
     await queryInterface.sequelize.query(`
       DROP TRIGGER IF EXISTS prevent_rental_overlap ON rental_agreements;
       DROP FUNCTION IF EXISTS check_rental_overlap();

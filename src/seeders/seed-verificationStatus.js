@@ -1,12 +1,13 @@
 import sequelize from '../config/database.js';
+import { VERIFICATION_STATUS } from '../constants/seeds.js';
 
 export const seedVerificationStatus = async () => {
   try {
     const verificationStatus = [
-      { name: 'PENDING', description: 'Pending verification' },
-      { name: 'APPROVED', description: 'Verified and approved' },
-      { name: 'REJECTED', description: 'Verification rejected' },
-      { name: 'FLAGGED', description: 'Flagged for review' }
+      { name: VERIFICATION_STATUS.PENDING, description: 'Pending verification' },
+      { name: VERIFICATION_STATUS.APPROVED, description: 'Verified and approved' },
+      { name: VERIFICATION_STATUS.REJECTED, description: 'Verification rejected' },
+      { name: VERIFICATION_STATUS.FLAGGED, description: 'Flagged for review' }
     ];
 
     console.log('✓ Verification Status seeded');

@@ -1,5 +1,6 @@
 import sequelize from '../config/database.js';
 import { DataTypes } from 'sequelize';
+import { PROPERTY_TYPES, LISTING_TYPES, PROPERTY_STATUS } from '../constants/seeds.js';
 
 export const Property = sequelize.define('Property', {
   id: {
@@ -26,15 +27,15 @@ export const Property = sequelize.define('Property', {
     allowNull: false,
   },
   property_type: {
-    type: DataTypes.ENUM('HOUSE', 'APARTMENT', 'CONDO', 'LAND', 'COMMERCIAL', 'TOWNHOUSE', 'FARM'),
+    type: DataTypes.ENUM(...Object.values(PROPERTY_TYPES)),
     allowNull: false,
   },
   listing_type: {
-    type: DataTypes.ENUM('SALE', 'RENT', 'BOTH'),
+    type: DataTypes.ENUM(...Object.values(LISTING_TYPES)),
     allowNull: false,
   },
   status: {
-    type: DataTypes.ENUM('PENDING_APPROVAL', 'ACTIVE', 'SOLD', 'RENTED', 'INACTIVE', 'UNDER_CONTRACT'),
+    type: DataTypes.ENUM(...Object.values(PROPERTY_STATUS)),
     allowNull: false,
   },
   price: {
@@ -97,16 +98,16 @@ export const Property = sequelize.define('Property', {
     type: DataTypes.TEXT,
     allowNull: false,
   },
+  image_url: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
   virtual_tour_url: {
     type: DataTypes.TEXT,
     allowNull: true,
   },
   youtube_video_url: {
     type: DataTypes.TEXT,
-    allowNull: true,
-  },
-  energy_rating: {
-    type: DataTypes.ENUM('A', 'B', 'C', 'D', 'E', 'F', 'G'),
     allowNull: true,
   },
   pet_policy: {
@@ -121,8 +122,11 @@ export const Property = sequelize.define('Property', {
     type: DataTypes.DATE,
     allowNull: true,
   },
+  verified_at: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
 }, {
   tableName: 'properties',
   timestamps: true,
-  paranoid: true,
 });

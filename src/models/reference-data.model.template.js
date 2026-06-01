@@ -105,7 +105,6 @@ export const PaymentStatus = sequelize.define('PaymentStatus', {
 // - MaintenancePriority
 // - MaintenanceStatus
 // - EscrowStatus
-// - EnergyRating
 // - AlertFrequency
 
 // Each model should follow the same pattern with an id, name (ENUM), description, and timestamps

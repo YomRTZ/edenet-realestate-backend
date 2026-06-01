@@ -1,5 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database.js';
+import { ESCROW_STATUS } from '../constants/seeds.js';
 
 export class EscrowTransaction extends Model {}
 
@@ -19,9 +20,9 @@ EscrowTransaction.init(
       allowNull: false,
     },
     escrow_status: {
-      type: DataTypes.ENUM('PENDING', 'DEPOSITED', 'RELEASED', 'DISPUTED', 'REFUNDED'),
+      type: DataTypes.ENUM(...Object.values(ESCROW_STATUS)),
       allowNull: false,
-      defaultValue: 'PENDING',
+      defaultValue: ESCROW_STATUS.DEPOSITED,
     },
     deposited_by: {
       type: DataTypes.UUID,

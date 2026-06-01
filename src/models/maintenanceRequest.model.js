@@ -1,5 +1,6 @@
 import sequelize from '../config/database.js';
 import { DataTypes } from 'sequelize';
+import { MAINTENANCE_PRIORITY, MAINTENANCE_STATUS } from '../constants/seeds.js';
 
 export const MaintenanceRequest = sequelize.define('MaintenanceRequest', {
   id: {
@@ -42,9 +43,9 @@ export const MaintenanceRequest = sequelize.define('MaintenanceRequest', {
     allowNull: false,
   },
   priority: {
-    type: DataTypes.ENUM('LOW', 'MEDIUM', 'HIGH', 'CRITICAL'),
+    type: DataTypes.ENUM(...Object.values(MAINTENANCE_PRIORITY)),
     allowNull: false,
-    defaultValue: 'MEDIUM',
+    defaultValue: MAINTENANCE_PRIORITY.MEDIUM,
   },
   description: {
     type: DataTypes.TEXT,
@@ -55,9 +56,9 @@ export const MaintenanceRequest = sequelize.define('MaintenanceRequest', {
     allowNull: true,
   },
   status: {
-    type: DataTypes.ENUM('PENDING', 'IN_PROGRESS', 'RESOLVED', 'COMPLETED', 'CANCELLED'),
+    type: DataTypes.ENUM(...Object.values(MAINTENANCE_STATUS)),
     allowNull: false,
-    defaultValue: 'PENDING',
+    defaultValue: MAINTENANCE_STATUS.SUBMITTED,
   },
   assigned_to: {
     type: DataTypes.STRING(255),

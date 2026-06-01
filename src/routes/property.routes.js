@@ -2,12 +2,13 @@ import express from 'express';
 import * as controller from '../controllers/property.controller.js';
 import { verifyToken } from '../middlewares/auth.middleware.js';
 import { validate } from '../middlewares/validate.middleware.js';
+import { uploadPropertyImageFile } from '../middlewares/upload.middleware.js';
 import { createPropertySchema, updatePropertySchema } from '../utils/validators.js';
 
 const router = express.Router();
 
 /* Create property (authenticated) */
-router.post('/', verifyToken, validate(createPropertySchema), controller.createProperty);
+router.post('/', verifyToken, uploadPropertyImageFile, validate(createPropertySchema), controller.createProperty);
 
 /* Get all properties */
 router.get('/', controller.getProperties);
@@ -19,7 +20,7 @@ router.get('/user/my-properties', verifyToken, controller.getUserProperties);
 router.get('/:id', controller.getPropertyById);
 
 /* Update property (authenticated) */
-router.put('/:id', verifyToken, validate(updatePropertySchema), controller.updateProperty);
+router.put('/:id', verifyToken, uploadPropertyImageFile, validate(updatePropertySchema), controller.updateProperty);
 
 /* Delete property (authenticated) */
 router.delete('/:id', verifyToken, controller.deleteProperty);

@@ -5,6 +5,7 @@ import { AppError } from '../utils/AppError.js';
 import { models } from '../models/index.js';
 import { generateOTP, getOTPExpiration } from '../utils/otp.js';
 import { isOTPVerified } from './otp.service.js';
+import { OTP_PURPOSES, ROLES } from '../constants/seeds.js';
 
 export const registerUser = async ({ email, password, password_hash, first_name, last_name, phone, role }) => {
   try {
@@ -25,9 +26,14 @@ export const registerUser = async ({ email, password, password_hash, first_name,
 
     if (!role) throw new AppError('Role is required for registration', 400);
 
-    const validRoles = ['OWNER', 'TENANT', 'AGENT', 'ADMIN'];
-    if (!validRoles.includes(role)) {
+    const validRoles = [ROLES.OWNER, ROLES.TENANT, ROLES.ADMIN];
+    if (!validRoles.includes(String(role).toUpperCase())) {
       throw new AppError(`Role '${role}' is invalid. Valid roles are: ${validRoles.join(', ')}`, 400);
+    }
+
+    const roleRecord = await models.Role.findOne({ where: { role_name: role.toUpperCase() } });
+    if (!roleRecord) {
+      throw new AppError(`Role '${role}' is not available in roles table.`, 400);
     }
 
     const user = await models.User.create({
@@ -36,7 +42,7 @@ export const registerUser = async ({ email, password, password_hash, first_name,
       first_name,
       last_name,
       phone,
-      role,
+      role_id: roleRecord.id,
     });
 
     // Generate and persist OTP; for development we will return the code in the API response
@@ -46,7 +52,7 @@ export const registerUser = async ({ email, password, password_hash, first_name,
       const otp = await models.OTP.create({
         email,
         code,
-        purpose: 'email_verification',
+        purpose: OTP_PURPOSES.EMAIL_VERIFICATION,
         is_verified: false,
         attempts: 0,
         expires_at: expiresAt,
@@ -74,7 +80,7 @@ export const loginUser = async ({ email, password_hash, rememberMe }, req) => {
   const valid = await comparePassword(password_hash, user.password_hash);
   if (!valid) throw new AppError("Invalid email or password. Please check your credentials and try again.", 401);
 
-  const emailVerified = await isOTPVerified(email, 'email_verification');
+  const emailVerified = await isOTPVerified(email, OTP_PURPOSES.EMAIL_VERIFICATION);
   if (!emailVerified) {
     throw new AppError('Email not verified. Please verify the OTP before signing in.', 401);
   }

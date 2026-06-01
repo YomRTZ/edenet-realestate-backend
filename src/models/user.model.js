@@ -30,9 +30,13 @@ export const User = sequelize.define('User', {
     type: DataTypes.TEXT,
     allowNull: false,
   },
-  role: {
-    type: DataTypes.ENUM('OWNER', 'TENANT', 'AGENT', 'ADMIN'),
+  role_id: {
+    type: DataTypes.UUID,
     allowNull: false,
+    references: {
+      model: 'roles',
+      key: 'id',
+    },
   },
   profile_image: {
     type: DataTypes.TEXT,
@@ -50,18 +54,7 @@ export const User = sequelize.define('User', {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
-  is_verified_agent: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false,
-  },
-  agent_license_number: {
-    type: DataTypes.STRING(100),
-    allowNull: true,
-  },
-  agency_name: {
-    type: DataTypes.STRING(255),
-    allowNull: true,
-  },
+  
   preferred_language: {
     type: DataTypes.STRING(10),
     defaultValue: 'en',
@@ -81,5 +74,4 @@ export const User = sequelize.define('User', {
 }, { 
   tableName: 'users', 
   timestamps: true,
-  paranoid: true,
 });

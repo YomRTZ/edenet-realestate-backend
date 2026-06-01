@@ -29,9 +29,15 @@ module.exports= {
         type: Sequelize.TEXT,
         allowNull: false,
       },
-      role: {
-        type: Sequelize.ENUM('OWNER', 'TENANT', 'AGENT', 'ADMIN'),
+      role_id: {
+        type: Sequelize.UUID,
         allowNull: false,
+        references: {
+          model: 'roles',
+          key: 'id',
+        },
+        onDelete: 'RESTRICT',
+        onUpdate: 'CASCADE',
       },
       profile_image: {
         type: Sequelize.TEXT,
@@ -49,18 +55,7 @@ module.exports= {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
       },
-      is_verified_agent: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false,
-      },
-      agent_license_number: {
-        type: Sequelize.STRING(100),
-        allowNull: true,
-      },
-      agency_name: {
-        type: Sequelize.STRING(255),
-        allowNull: true,
-      },
+      
       preferred_language: {
         type: Sequelize.STRING(10),
         defaultValue: 'en',

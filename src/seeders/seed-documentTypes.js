@@ -1,16 +1,17 @@
 import sequelize from '../config/database.js';
+import { DOCUMENT_TYPES } from '../constants/seeds.js';
 
 export const seedDocumentTypes = async () => {
   try {
     const documentTypes = [
-      { name: 'DEED', description: 'Property deed' },
-      { name: 'TITLE', description: 'Title document' },
-      { name: 'SURVEY', description: 'Land survey' },
-      { name: 'INSPECTION', description: 'Property inspection report' },
-      { name: 'TAX_RECORD', description: 'Tax record document' },
-      { name: 'INSURANCE', description: 'Insurance document' },
-      { name: 'CONTRACT', description: 'Purchase/Rental contract' },
-      { name: 'LEASE', description: 'Lease agreement' }
+      { name: DOCUMENT_TYPES.DEED, description: 'Property deed' },
+      { name: DOCUMENT_TYPES.TITLE, description: 'Title document' },
+      { name: DOCUMENT_TYPES.SURVEY, description: 'Land survey' },
+      { name: DOCUMENT_TYPES.INSPECTION, description: 'Property inspection report' },
+      { name: DOCUMENT_TYPES.TAX_RECORD, description: 'Tax record document' },
+      { name: DOCUMENT_TYPES.INSURANCE, description: 'Insurance document' },
+      { name: DOCUMENT_TYPES.CONTRACT, description: 'Purchase/Rental contract' },
+      { name: DOCUMENT_TYPES.LEASE, description: 'Lease agreement' }
     ];
 
     console.log('✓ Document Types seeded');

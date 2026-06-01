@@ -98,6 +98,10 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false,
       },
+      image_url: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
       virtual_tour_url: {
         type: Sequelize.TEXT,
         allowNull: true,
@@ -106,10 +110,7 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: true,
       },
-      energy_rating: {
-        type: Sequelize.ENUM('A', 'B', 'C', 'D', 'E', 'F', 'G'),
-        allowNull: true,
-      },
+
       pet_policy: {
         type: Sequelize.TEXT,
         allowNull: true,
@@ -119,6 +120,10 @@ module.exports = {
         defaultValue: false,
       },
       deleted_at: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
+      verified_at: {
         type: Sequelize.DATE,
         allowNull: true,
       },

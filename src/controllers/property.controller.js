@@ -1,14 +1,22 @@
 import * as service from '../services/property.service.js';
 import { catchAsync } from '../utils/catchAsync.js';
+import { removeFileByFsPath } from '../utils/fileHelper.js';
 
 /* Create a new property */
 export const createProperty = catchAsync(async (req, res) => {
-  const property = await service.createProperty(req.user.id, req.body);
-  res.status(201).json({ 
-    success: true, 
-    message: 'Property created successfully', 
-    data: property 
-  });
+  try {
+    const property = await service.createProperty(req.user.id, req.body, req.file);
+    res.status(201).json({ 
+      success: true, 
+      message: 'Property created successfully', 
+      data: property 
+    });
+  } catch (error) {
+    if (req.file) {
+      await removeFileByFsPath(req.file.path);
+    }
+    throw error;
+  }
 });
 
 /* Get all properties with pagination and filtering */
@@ -38,12 +46,19 @@ export const getPropertyById = catchAsync(async (req, res) => {
 
 /* Update property */
 export const updateProperty = catchAsync(async (req, res) => {
-  const property = await service.updateProperty(req.params.id, req.user.id, req.body);
-  res.json({ 
-    success: true, 
-    message: 'Property updated successfully', 
-    data: property 
-  });
+  try {
+    const property = await service.updateProperty(req.params.id, req.user.id, req.body, req.file);
+    res.json({ 
+      success: true, 
+      message: 'Property updated successfully', 
+      data: property 
+    });
+  } catch (error) {
+    if (req.file) {
+      await removeFileByFsPath(req.file.path);
+    }
+    throw error;
+  }
 });
 
 /* Delete property */

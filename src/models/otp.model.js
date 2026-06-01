@@ -1,5 +1,6 @@
 import sequelize from '../config/database.js';
 import { DataTypes } from 'sequelize';
+import { OTP_PURPOSES } from '../constants/seeds.js';
 
 export const OTP = sequelize.define('OTP', {
   id: {
@@ -16,9 +17,9 @@ export const OTP = sequelize.define('OTP', {
     allowNull: false,
   },
   purpose: {
-    type: DataTypes.ENUM('email_verification', 'password_reset', 'two_factor'),
+    type: DataTypes.ENUM(...Object.values(OTP_PURPOSES)),
     allowNull: false,
-    defaultValue: 'email_verification',
+    defaultValue: OTP_PURPOSES.EMAIL_VERIFICATION,
   },
   is_verified: {
     type: DataTypes.BOOLEAN,
