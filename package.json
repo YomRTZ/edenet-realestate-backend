@@ -8,9 +8,9 @@
     "dev": "nodemon src/server.js",
     "seed": "node src/seeders/seed.js",
     "sync": "node src/sync-db.js",
-    "migrate": "sequelize db:migrate",
-    "migrate:undo": "sequelize db:migrate:undo",
-    "migrate:status": "sequelize db:migrate:status"
+    "migrate": "sequelize db:migrate --config src/config/config.js",
+    "migrate:undo": "sequelize db:migrate:undo --config src/config/config.js",
+    "migrate:status": "sequelize db:migrate:status --config src/config/config.js"
   },
   "keywords": [],
   "author": "",
