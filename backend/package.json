@@ -1,0 +1,31 @@
+{
+  "name": "realestate-backend",
+  "version": "2.0.0",
+  "description": "Hybrid Web2 + Web3 real estate backend — clean MVC architecture",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js",
+    "db:migrate": "npx prisma migrate dev",
+    "db:generate": "npx prisma generate",
+    "db:studio": "npx prisma studio",
+    "test:hash": "node src/utils/hash.test.js"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.10.0",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "ethers": "^5.7.2",
+    "express": "^4.18.3",
+    "express-rate-limit": "^8.5.2",
+    "google-auth-library": "^10.7.0",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^9.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0",
+    "prisma": "^5.10.0"
+  }
+}

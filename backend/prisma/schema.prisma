@@ -1,0 +1,287 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// 1. properties
+//    One row per minted property.
+//    All searchable fields stored as real columns
+//    so you can filter/sort without touching the chain.
+// ─────────────────────────────────────────────
+model Property {
+  id                String    @id @default(uuid())
+  tokenId           String    @unique               // NFT token ID (as string to avoid int overflow)
+  ownerWallet       String                          // current owner's wallet address
+  status            PropertyStatus @default(PENDING) // PENDING | MINTED | DECLINED
+
+  // Property details (mirrors your contract struct)
+  name              String
+  location          String
+  propertyType      String
+  bedrooms          Int       @default(0)
+  bathrooms         Int       @default(0)
+  squareFeet    Int       @default(0)
+  parking       Int       @default(0)
+  floors        Int       @default(0)
+  yearBuilt     Int       @default(0)
+  price         String                       // stored as string (wei value)
+  description       String?
+
+  // Hashes (latest approved version — for quick lookup)
+  metadataHash      String?   @db.VarChar(64)       // SHA-256 hex of the metadata JSON
+  imagesRootHash    String?   @db.VarChar(64)       // Merkle root of all image hashes
+  documentsRootHash String?   @db.VarChar(64)       // Merkle root of all document hashes
+  chainHash         String?   @db.VarChar(64)       // the hash stored on-chain (matches metadataHash on approval)
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  documents         Document[]
+  metadataVersions  MetadataVersion[]
+  requests          Request[]
+  rentalAgreements  RentalAgreement[]
+
+  // Rental fields
+  isForRent         Boolean   @default(false)
+  isRented          Boolean   @default(false)
+  monthlyRent       String?
+  rentalDuration    Int?
+}
+
+// ─────────────────────────────────────────────
+// 2. documents
+//    One row per uploaded file.
+//    Raw file bytes stored as Bytes (PostgreSQL bytea).
+//    Old versions are NEVER deleted — full audit trail.
+// ─────────────────────────────────────────────
+model Document {
+  id          String      @id @default(uuid())
+  propertyId  String
+  property    Property    @relation(fields: [propertyId], references: [id])
+
+  fileData    Bytes                               // raw file bytes (bytea)
+  sha256Hash  String      @db.VarChar(64)         // hex hash of fileData
+  fileName    String                              // original file name
+  mimeType    String                              // e.g. "application/pdf", "image/jpeg"
+  fileType    DocumentFileType                    // IMAGE | DOCUMENT
+  docType     String                              // "deed" | "survey" | "id" | "photo" etc.
+  versionNo   Int         @default(1)             // increments on metadata updates
+  sizeBytes   Int                                 // file size in bytes
+
+  uploadedBy  String                              // wallet address of uploader
+  createdAt   DateTime    @default(now())
+
+  @@index([propertyId])
+  @@index([sha256Hash])
+}
+
+// ─────────────────────────────────────────────
+// 3. metadata_versions
+//    Every approved change to a property's metadata
+//    gets a new row. Mirrors the version history on-chain.
+// ─────────────────────────────────────────────
+model MetadataVersion {
+  id                String    @id @default(uuid())
+  propertyId        String
+  property          Property  @relation(fields: [propertyId], references: [id])
+
+  versionNo         Int                           // 1, 2, 3 ...
+  metadataHash      String    @db.VarChar(64)     // SHA-256 of the metadata JSON at this version
+  imagesRootHash    String    @db.VarChar(64)     // Merkle root of images at this version
+  documentsRootHash String    @db.VarChar(64)     // Merkle root of documents at this version
+  metadataSnapshot  Json                          // full metadata JSON saved for reference
+
+  approvedAt        DateTime  @default(now())
+  approvedBy        String                        // gov't wallet address
+
+  @@unique([propertyId, versionNo])
+  @@index([propertyId])
+}
+
+// ─────────────────────────────────────────────
+// 4. requests
+//    Every citizen-initiated action (mint or update).
+//    Gov't reviews these and approves or declines.
+// ─────────────────────────────────────────────
+model Request {
+  id                String        @id @default(uuid())
+  propertyId        String?                         // null for initial mint requests (no token yet)
+  property          Property?     @relation(fields: [propertyId], references: [id])
+
+  type              RequestType                     // MINT | UPDATE
+  status            RequestStatus @default(PENDING) // PENDING | APPROVED | DECLINED
+
+  // Hashes proposed in this request (what will go on-chain if approved)
+  metadataHash      String        @db.VarChar(64)
+  imagesRootHash    String        @db.VarChar(64)
+  documentsRootHash String        @db.VarChar(64)
+
+  // Snapshot of metadata submitted with this request
+  metadataSnapshot  Json
+
+  // Wallets
+  submittedBy       String                          // citizen wallet
+  reviewedBy        String?                         // gov't wallet (set on approval/decline)
+
+  // Linked document IDs (the files submitted with this request)
+  documentIds       String[]                        // array of Document.id
+
+  // Timestamps
+  submittedAt       DateTime      @default(now())
+  reviewedAt        DateTime?
+
+  // Optional: reason for decline
+  declineReason     String?
+
+  @@index([status])
+  @@index([submittedBy])
+}
+
+// ─────────────────────────────────────────────
+// Enums
+// ─────────────────────────────────────────────
+enum PropertyStatus {
+  PENDING
+  MINTED
+  DECLINED
+}
+
+enum DocumentFileType {
+  IMAGE
+  DOCUMENT
+}
+
+enum RequestType {
+  MINT
+  UPDATE
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  DECLINED
+}
+
+enum RentalStatus {
+  ACTIVE
+  ENDED
+  DEFAULTED
+}
+
+model RentalAgreement {
+  id                String        @id @default(uuid())
+  propertyId        String
+  property          Property      @relation(fields: [propertyId], references: [id])
+  tenantWallet      String
+  landlordWallet    String
+  monthlyRent       String
+  faithDeposit      String
+  startTime         DateTime
+  endTime           DateTime
+  nextPaymentDue    DateTime
+  durationMonths    Int
+  status            RentalStatus  @default(ACTIVE)
+  terminatedBy      String?
+  terminationReason String?
+  txHash            String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  payments          RentPayment[]
+
+  @@index([propertyId])
+  @@index([tenantWallet])
+  @@index([landlordWallet])
+}
+
+model RentPayment {
+  id            String          @id @default(uuid())
+  rentalId      String
+  rental        RentalAgreement @relation(fields: [rentalId], references: [id])
+  amount        String
+  wasLate       Boolean         @default(false)
+  penaltyAmount String?
+  txHash        String
+  paidAt        DateTime        @default(now())
+
+  @@index([rentalId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String?
+  forAdmin  Boolean  @default(false)
+  type      String
+  title     String
+  message   String
+  link      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// ─────────────────────────────────────────────
+// KYC & Authentication Models
+// ─────────────────────────────────────────────
+model User {
+  id            String        @id @default(cuid())
+  email         String        @unique
+  passwordHash  String?
+  authProvider  String        @default("EMAIL")
+  status        UserStatus    @default(PENDING_EMAIL)
+  walletAddress String?       @unique
+  createdAt     DateTime      @default(now())
+  otpCodes      OtpCode[]
+  kycDocuments  KycDocument[]
+}
+
+model OtpCode {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  codeHash  String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+
+  @@index([userId])
+}
+
+model KycDocument {
+  id         String     @id @default(cuid())
+  userId     String
+  user       User       @relation(fields: [userId], references: [id])
+  fileData   Bytes
+  sha256Hash String
+  docType    KycDocType
+  status     KycStatus  @default(PENDING)
+  reviewedBy String?
+  reviewedAt DateTime?
+
+  @@index([userId])
+}
+
+enum UserStatus {
+  PENDING_EMAIL
+  PENDING_KYC
+  PENDING_APPROVAL
+  ACTIVE
+  REJECTED
+}
+
+enum KycDocType {
+  ID_FRONT
+  ID_BACK
+  SELFIE
+}
+
+enum KycStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
