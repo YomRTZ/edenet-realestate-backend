@@ -1,0 +1,43 @@
+// DOCUMENTS (raw bytes + per-file sha256)
+
+model Document {
+  id          String      @id @default(uuid())
+  propertyId  String
+  property    Property    @relation(fields: [propertyId], references: [id])
+
+  fileData    Bytes
+  sha256Hash  String      @db.VarChar(64)
+  fileName    String
+  mimeType    String
+
+  fileType    DocumentFileType
+  docType     String
+
+  versionNo   Int         @default(1)
+  sizeBytes   Int
+
+  uploadedBy  String
+  createdAt   DateTime    @default(now())
+
+  @@index([propertyId])
+  @@index([sha256Hash])
+}
+
+model MetadataVersion {
+  id                String    @id @default(uuid())
+  propertyId        String
+  property          Property  @relation(fields: [propertyId], references: [id])
+
+  versionNo         Int
+  metadataHash      String   @db.VarChar(64)
+  imagesRootHash    String   @db.VarChar(64)
+  documentsRootHash String   @db.VarChar(64)
+
+  metadataSnapshot  Json
+
+  approvedAt        DateTime  @default(now())
+  approvedBy        String
+
+  @@unique([propertyId, versionNo])
+  @@index([propertyId])
+}

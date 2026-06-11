@@ -1,0 +1,22 @@
+prisma
+enum PropertyStatus {
+  PENDING
+  MINTED
+  DECLINED
+}
+
+enum DocumentFileType {
+  IMAGE
+  DOCUMENT
+}
+
+enum RequestType {
+  MINT
+  UPDATE
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  DECLINED
+}

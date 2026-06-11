@@ -1,0 +1,33 @@
+// PROPERTY (search + current hashes)
+
+model Property {
+  id                String    @id @default(uuid())
+  tokenId           String    @unique
+  ownerWallet       String
+  status            PropertyStatus @default(PENDING)
+
+  name              String
+  location          String
+  propertyType      String
+  bedrooms          Int       @default(0)
+  bathrooms         Int       @default(0)
+  squareFeet       Int       @default(0)
+  parking           Int       @default(0)
+  floors            Int       @default(0)
+  yearBuilt         Int       @default(0)
+  price             String
+  description       String?
+
+  // Latest approved hashes (for quick lookup)
+  metadataHash      String? @db.VarChar(64)
+  imagesRootHash    String? @db.VarChar(64)
+  documentsRootHash String? @db.VarChar(64)
+  chainHash         String? @db.VarChar(64)
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  documents         Document[]
+  metadataVersions  MetadataVersion[]
+  requests          Request[]
+}

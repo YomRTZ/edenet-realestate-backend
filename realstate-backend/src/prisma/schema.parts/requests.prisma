@@ -1,0 +1,29 @@
+// REQUESTS (MINT/UPDATE staging)
+
+model Request {
+  id                String      @id @default(uuid())
+  propertyId        String?
+  property          Property?   @relation(fields: [propertyId], references: [id])
+
+  type              RequestType
+  status            RequestStatus @default(PENDING)
+
+  metadataHash      String      @db.VarChar(64)
+  imagesRootHash    String      @db.VarChar(64)
+  documentsRootHash String     @db.VarChar(64)
+
+  metadataSnapshot  Json
+
+  submittedBy       String
+  reviewedBy        String?
+  reviewedAt        DateTime?
+
+  documentIds       String[]
+
+  declineReason     String?
+
+  submittedAt       DateTime @default(now())
+
+  @@index([status])
+  @@index([submittedBy])
+}

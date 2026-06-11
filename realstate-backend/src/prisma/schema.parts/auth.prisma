@@ -1,0 +1,36 @@
+//AUTH (wallet sign-in)
+
+model User {
+  id           String        @id @default(uuid())
+  walletAddress String      @unique
+  createdAt    DateTime      @default(now())
+
+  nonces       WalletNonce[]
+  sessions     UserSession[]
+}
+
+model WalletNonce {
+  id           String   @id @default(uuid())
+  walletAddress String
+  nonce        String
+
+  expiresAt    DateTime
+  usedAt       DateTime?
+  createdAt    DateTime @default(now())
+
+  user         User      @relation(fields: [walletAddress], references: [walletAddress])
+
+  @@index([walletAddress])
+  @@index([usedAt])
+}
+
+model UserSession {
+  id            String   @id @default(uuid())
+  userId        String
+
+  sessionToken String   @unique
+  expiresAt     DateTime
+  createdAt     DateTime @default(now())
+
+  user          User     @relation(fields: [userId], references: [id])
+}
