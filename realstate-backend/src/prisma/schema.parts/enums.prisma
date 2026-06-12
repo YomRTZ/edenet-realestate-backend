@@ -1,4 +1,3 @@
-prisma
 enum PropertyStatus {
   PENDING
   MINTED
@@ -19,4 +18,8 @@ enum RequestStatus {
   PENDING
   APPROVED
   DECLINED
+}
+enum Role{
+  Government
+  Citizen
 }

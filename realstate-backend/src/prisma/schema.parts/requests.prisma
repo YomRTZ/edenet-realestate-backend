@@ -2,28 +2,29 @@
 
 model Request {
   id                String      @id @default(uuid())
-  propertyId        String?
-  property          Property?   @relation(fields: [propertyId], references: [id])
+  propertyId        String?     @map("property_id")
+  property          Property?   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   type              RequestType
   status            RequestStatus @default(PENDING)
 
-  metadataHash      String      @db.VarChar(64)
-  imagesRootHash    String      @db.VarChar(64)
-  documentsRootHash String     @db.VarChar(64)
+  metadataHash      String      @db.VarChar(64) @map("metadata_hash")
+  imagesRootHash    String      @db.VarChar(64) @map("images_root_hash")
+  documentsRootHash String      @db.VarChar(64) @map("documents_root_hash")
 
-  metadataSnapshot  Json
+  metadataSnapshot  Json        @map("metadata_snapshot")
 
-  submittedBy       String
-  reviewedBy        String?
-  reviewedAt        DateTime?
+  submittedBy       String      @map("submitted_by")
+  reviewedBy        String?     @map("reviewed_by")
+  reviewedAt        DateTime?   @map("reviewed_at")
 
-  documentIds       String[]
+  documentIds       String[]    @map("document_ids")
 
-  declineReason     String?
+  declineReason     String?     @map("decline_reason")
 
-  submittedAt       DateTime @default(now())
+  submittedAt       DateTime    @default(now()) @map("submitted_at")
 
   @@index([status])
   @@index([submittedBy])
+  @@map("requests")
 }

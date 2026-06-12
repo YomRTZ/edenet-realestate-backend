@@ -1,9 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const cwd = process.cwd();
-const partsDir = path.join(cwd, 'prisma', 'schema.parts');
-const outPath = path.join(cwd, 'prisma', 'schema.generated.prisma');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const partsDir = path.join(__dirname, 'schema.parts');
+const outPath = path.join(__dirname, 'schema.generated.prisma');
 
 const header = `// THIS FILE IS AUTO-GENERATED. DO NOT EDIT BY HAND.
 
@@ -13,7 +14,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 `;
 

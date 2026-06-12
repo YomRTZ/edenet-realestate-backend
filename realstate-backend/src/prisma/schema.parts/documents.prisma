@@ -2,8 +2,8 @@
 
 model Document {
   id          String      @id @default(uuid())
-  propertyId  String
-  property    Property    @relation(fields: [propertyId], references: [id])
+  propertyId  String      @map("property_id")
+  property    Property    @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   fileData    Bytes
   sha256Hash  String      @db.VarChar(64)
@@ -17,27 +17,29 @@ model Document {
   sizeBytes   Int
 
   uploadedBy  String
-  createdAt   DateTime    @default(now())
+  createdAt   DateTime    @default(now()) @map("created_at")
 
   @@index([propertyId])
   @@index([sha256Hash])
+  @@map("documents")
 }
 
 model MetadataVersion {
   id                String    @id @default(uuid())
-  propertyId        String
-  property          Property  @relation(fields: [propertyId], references: [id])
+  propertyId        String    @map("property_id")
+  property          Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
-  versionNo         Int
-  metadataHash      String   @db.VarChar(64)
-  imagesRootHash    String   @db.VarChar(64)
-  documentsRootHash String   @db.VarChar(64)
+  versionNo         Int       @map("version_no")
+  metadataHash      String    @db.VarChar(64) @map("metadata_hash")
+  imagesRootHash    String    @db.VarChar(64) @map("images_root_hash")
+  documentsRootHash String    @db.VarChar(64) @map("documents_root_hash")
 
-  metadataSnapshot  Json
+  metadataSnapshot  Json      @map("metadata_snapshot")
 
-  approvedAt        DateTime  @default(now())
-  approvedBy        String
+  approvedAt        DateTime  @default(now()) @map("approved_at")
+  approvedBy        String    @map("approved_by")
 
   @@unique([propertyId, versionNo])
   @@index([propertyId])
+  @@map("metadata_versions")
 }

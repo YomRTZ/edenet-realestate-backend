@@ -30,4 +30,6 @@ model Property {
   documents         Document[]
   metadataVersions  MetadataVersion[]
   requests          Request[]
+
+  @@map("properties")
 }

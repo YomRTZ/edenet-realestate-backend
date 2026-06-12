@@ -4,9 +4,9 @@
   "type": "module",
   "scripts": {
     "prisma:compose": "node src/prisma/compose-schema.mjs",
-    "db:migrate": "npm run src/prisma:compose && npx src/prisma migrate dev --schema src/prisma/schema.generated.prisma",
-    "db:generate": "npm run src/prisma:compose && npx src/prisma generate --schema src/prisma/schema.generated.prisma",
-    "prisma:studio": "npm run src/prisma:compose && npx src/prisma studio --schema src/prisma/schema.generated.prisma"
+    "db:migrate": "npm run prisma:compose && npx prisma migrate dev --schema src/prisma/schema.generated.prisma",
+    "db:generate": "npm run prisma:compose && npx prisma generate --schema src/prisma/schema.generated.prisma",
+    "prisma:studio": "npm run prisma:compose && npx prisma studio --schema src/prisma/schema.generated.prisma"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-ethers": "^4.0.13",
