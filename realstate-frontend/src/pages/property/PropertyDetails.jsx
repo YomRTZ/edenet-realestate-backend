@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import PropertyChatDrawer from '../../components/PropertyChatDrawer.jsx'
+import RealEstateMap from '../../components/RealEstateMap.jsx'
 import { propertiesMock } from '../../mock/propertiesMock.js'
 
 
@@ -152,22 +153,21 @@ export default function PropertyDetails() {
                 </div>
 
                 <div className="mt-4 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
-                  <div className="relative h-56 w-full">
-                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-100 via-white to-blue-100" />
-                    <div className="absolute inset-0 flex items-center justify-center px-4">
-                      <div className="text-center">
-                        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-inset ring-slate-200">
-                          📍
-                        </div>
-                        <div className="mt-3 text-sm font-semibold text-slate-900">
-                          Map preview (mock)
-                        </div>
-                        <div className="mt-1 text-xs text-slate-600">
-                          Coordinates not available in mock data. Use the link above for the full map.
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <RealEstateMap 
+                    height="300px"
+                    center={property.location.lat && property.location.lng 
+                      ? [property.location.lat, property.location.lng] 
+                      : [40.7128, -74.0060]
+                    }
+                    zoom={14}
+                    singleProperty={{
+                      id: property.id,
+                      title: property.title,
+                      lat: property.location.lat,
+                      lng: property.location.lng,
+                      price: property.price
+                    }}
+                  />
                 </div>
               </div>
 

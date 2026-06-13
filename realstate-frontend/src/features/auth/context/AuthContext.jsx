@@ -21,15 +21,32 @@ export function AuthProvider({ children }) {
 
     try {
       setIsLoading(true);
+      
+      // Get currently selected account BEFORE requesting
+      const currentAccounts = await window.ethereum.request({ method: 'eth_accounts' });
+      
+      // If user hasn't connected yet, request connection
+      if (currentAccounts.length === 0) {
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+      }
+      
+      // Get the currently selected account
+      const selectedAccounts = await window.ethereum.request({ method: 'eth_accounts' });
+      if (selectedAccounts.length === 0) {
+        throw new Error('No MetaMask accounts available');
+      }
+      
+      const selectedAccount = selectedAccounts[0]; // Use the currently selected one
+      console.log('Using MetaMask account:', selectedAccount);
+      
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
-      const userAddress = await signer.getAddress();
 
-      const nonce = await authApi.getNonce(userAddress);
+      const nonce = await authApi.getNonce(selectedAccount);
       const verificationMessage = `Sign to authorize access:\nNonce: ${nonce}`;
       const signature = await signer.signMessage(verificationMessage);
 
-      const userData = await authApi.login(userAddress, signature);
+      const userData = await authApi.login(selectedAccount, signature);
 
       setAccount(userData.account);
       setRole(userData.role);

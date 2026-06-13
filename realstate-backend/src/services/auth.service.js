@@ -20,6 +20,8 @@ export const authService = {
     const cleanAddress = walletAddress && String(walletAddress).toLowerCase();
     console.log('generateNonce called for:', cleanAddress);
     console.log('DATABASE_URL:', process.env.DATABASE_URL ? '[REDACTED]' : 'not-set');
+    console.log('GOV_ADDRESS from .env:', GOV_ADDRESS);
+    console.log('Address match check:', cleanAddress, '===', GOV_ADDRESS, '?', cleanAddress === GOV_ADDRESS);
 
     const generatedNonce = crypto.randomBytes(16).toString('hex');
     const expiryTimestamp = new Date(Date.now() + 5 * 60 * 1000);
