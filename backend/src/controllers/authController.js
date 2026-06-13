@@ -1,4 +1,3 @@
-// src/controllers/authController.js
 // Thin HTTP layer — delegates all logic to authService.
 
 const authService = require('../services/authService');

@@ -1,6 +1,6 @@
 // src/config/env.js
-// Validates that all required environment variables are set at startup.
-// Import this at the top of index.js before anything else.
+// Validates required environment variables at startup.
+// Import this at the very top of index.js before anything else.
 
 const REQUIRED = [
   'DATABASE_URL',
@@ -9,7 +9,6 @@ const REQUIRED = [
   'GOV_PRIVATE_KEY',
   'RPC_URL',
   'PROPERTY_NFT_ADDRESS',
-  'MARKETPLACE_ADDRESS',
   'GMAIL_USER',
   'GMAIL_APP_PASSWORD',
 ];

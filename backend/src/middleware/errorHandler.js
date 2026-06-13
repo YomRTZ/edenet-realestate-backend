@@ -1,4 +1,3 @@
-// src/middleware/errorHandler.js
 // Global Express error handler — must be registered last (after all routes).
 
 /**

@@ -1,4 +1,3 @@
-// src/controllers/verifyController.js
 // Thin HTTP layer — delegates all logic to verifyService.
 
 const verifyService = require('../services/verifyService');

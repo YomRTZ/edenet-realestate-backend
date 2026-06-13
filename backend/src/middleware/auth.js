@@ -1,4 +1,3 @@
-// src/middleware/auth.js
 // Verifies the Bearer JWT and attaches req.user = { id, email, status, walletAddress, role }.
 
 const jwt = require('jsonwebtoken');

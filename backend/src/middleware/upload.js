@@ -1,4 +1,3 @@
-// src/middleware/upload.js
 // Multer configured with memory storage — files arrive as Buffers in req.files.
 // Files are NEVER written to disk.
 

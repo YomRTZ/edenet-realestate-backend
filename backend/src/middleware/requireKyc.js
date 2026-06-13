@@ -1,4 +1,3 @@
-// src/middleware/requireKyc.js
 // Ensures the authenticated user has passed KYC (status === 'ACTIVE').
 // Must be used after auth middleware.
 

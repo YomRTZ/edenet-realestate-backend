@@ -1,4 +1,3 @@
-// src/controllers/kycController.js
 // Thin HTTP layer — delegates all logic to kycService.
 
 const kycService = require('../services/kycService');

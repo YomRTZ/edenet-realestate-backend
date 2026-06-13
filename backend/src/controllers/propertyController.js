@@ -1,4 +1,3 @@
-// src/controllers/propertyController.js
 // Thin HTTP layer — delegates all logic to propertyService.
 
 const propertyService = require('../services/propertyService');

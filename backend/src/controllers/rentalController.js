@@ -1,4 +1,3 @@
-// src/controllers/rentalController.js
 // Thin HTTP layer — delegates all logic to rentalService.
 
 const rentalService = require('../services/rentalService');

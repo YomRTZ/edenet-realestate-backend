@@ -63,6 +63,8 @@ async function approveRequest(requestId, govWallet, { onChainRequestId, onChainU
 
     let mintedTokenId = onChainRequestId.toString();
     try {
+      // ethers v6: receipt.hash (was receipt.transactionHash in v5)
+      // receipt.events[] is populated by the _parseReceiptLogs shim in contract.js
       const approvedEvent = receipt.events?.find((e) => e.event === 'RequestApproved');
       if (approvedEvent) mintedTokenId = approvedEvent.args.propertyId.toString();
     } catch (_) {}
@@ -97,7 +99,7 @@ async function approveRequest(requestId, govWallet, { onChainRequestId, onChainU
       '/dashboard/my-properties'
     );
 
-    return { message: 'Mint request approved', tokenId: mintedTokenId, txHash: receipt.transactionHash };
+    return { message: 'Mint request approved', tokenId: mintedTokenId, txHash: receipt.hash };
   }
 
   // ── UPDATE ──────────────────────────────────────────────────────────────────
@@ -166,7 +168,7 @@ async function approveRequest(requestId, govWallet, { onChainRequestId, onChainU
       '/dashboard/my-properties'
     );
 
-    return { message: 'Update request approved', newVersion: newVersionNo, txHash: receipt.transactionHash };
+    return { message: 'Update request approved', newVersion: newVersionNo, txHash: receipt.hash };
   }
 
   throw Object.assign(new Error('Unknown request type'), { status: 400 });
@@ -296,8 +298,7 @@ async function approveKyc(userId, reviewerId) {
 }
 
 async function rejectKyc(userId, reviewerId, reason) {
-  if (!reason) throw Object.assign(new Error('Rejection reason is required'), { status: 400 });
-
+  // reason presence and min-length enforced by rejectKycSchema at route level
   const user = await prisma.user.findUnique({ where: { id: userId }, include: { kycDocuments: true } });
   if (!user) throw Object.assign(new Error('User not found'), { status: 404 });
   if (user.status !== 'PENDING_APPROVAL') {

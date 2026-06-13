@@ -1,5 +1,6 @@
 // src/controllers/adminController.js
 // Thin HTTP layer — delegates all logic to adminService.
+// Controllers only: validate HTTP input, call service, send response.
 
 const adminService = require('../services/adminService');
 
@@ -34,7 +35,7 @@ async function declineRequest(req, res, next) {
   }
 }
 
-async function listUsers(req, res, next) {
+async function listUsers(_req, res, next) {
   try {
     const result = await adminService.listUsers();
     res.json(result);
@@ -43,7 +44,7 @@ async function listUsers(req, res, next) {
   }
 }
 
-async function listPendingKyc(req, res, next) {
+async function listPendingKyc(_req, res, next) {
   try {
     const result = await adminService.listPendingKyc();
     res.json(result);
@@ -56,8 +57,10 @@ async function getKycDocument(req, res, next) {
   try {
     const { userId, docId } = req.params;
     const doc = await adminService.getKycDocument(userId, docId);
-    res.setHeader('Content-Type', 'image/jpeg');
+    // Use the stored mimeType instead of hardcoding image/jpeg
+    res.setHeader('Content-Type', doc.mimeType || 'application/octet-stream');
     res.setHeader('Content-Length', doc.fileData.length);
+    res.setHeader('Content-Disposition', `inline; filename="${doc.docType}.jpg"`);
     res.send(doc.fileData);
   } catch (err) {
     next(err);
@@ -82,7 +85,7 @@ async function rejectKyc(req, res, next) {
   }
 }
 
-async function getAnalytics(req, res, next) {
+async function getAnalytics(_req, res, next) {
   try {
     const result = await adminService.getAnalytics();
     res.json(result);

@@ -1,4 +1,3 @@
-// src/controllers/notificationController.js
 // Thin HTTP layer — delegates all logic to notificationService.
 
 const notificationService = require('../services/notificationService');
