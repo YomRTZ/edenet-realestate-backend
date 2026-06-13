@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import PropertyCard from '../components/PropertyCard.jsx'
 import PropertyFilterSearch from '../components/PropertyFilterSearch.jsx'
 import { propertiesMock } from '../mock/propertiesMock.js'
+import { PortalDashboard } from '../features/auth/components/PortalDashboard.jsx'
 
 export default function Home() {
   const [query, setQuery] = useState('')
@@ -58,7 +59,7 @@ export default function Home() {
                 This page uses a single-file mock dataset. Cards are reusable and designed for a premium browsing experience.
               </p>
             </div>
-
+<PortalDashboard />
             <PropertyFilterSearch
               query={query}
               onQueryChange={setQuery}

@@ -15,14 +15,6 @@ export default function Navbar() {
   const addPropertyClass = isAddProperty
     ? 'rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white'
     : 'rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium text-slate-900 hover:bg-slate-200'
-
-  const portalClass = isPortal
-    ? 'rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white'
-    : 'rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium text-slate-900 hover:bg-slate-200'
-
-
-
-
   return (
     <div className="w-full">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
@@ -53,13 +45,6 @@ export default function Navbar() {
             Add Property
           </button>
 
-          <button
-            type="button"
-            className={portalClass}
-            onClick={() => (window.location.pathname = '/portal')}
-          >
-            Citizen Portal
-          </button>
         </div>
 
 

@@ -10,6 +10,7 @@ const header = `// THIS FILE IS AUTO-GENERATED. DO NOT EDIT BY HAND.
 
 generator client {
   provider = "prisma-client-js"
+  engineType = "binary"
 }
 
 datasource db {

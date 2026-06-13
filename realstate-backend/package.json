@@ -6,7 +6,11 @@
     "prisma:compose": "node src/prisma/compose-schema.mjs",
     "db:migrate": "npm run prisma:compose && npx prisma migrate dev --schema src/prisma/schema.generated.prisma",
     "db:generate": "npm run prisma:compose && npx prisma generate --schema src/prisma/schema.generated.prisma",
-    "prisma:studio": "npm run prisma:compose && npx prisma studio --schema src/prisma/schema.generated.prisma"
+    "prisma:studio": "npm run prisma:compose && npx prisma studio --schema src/prisma/schema.generated.prisma",
+    "start": "node server.js"
+  },
+  "prisma": {
+    "schema": "src/prisma/schema.generated.prisma"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-ethers": "^4.0.13",
@@ -29,9 +33,11 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.6.1",
+    "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.1.1",

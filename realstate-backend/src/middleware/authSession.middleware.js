@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken';
 import pkg from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 const { PrismaClient } = pkg;
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }) });
 
 export async function authorizeSession(req, res, next) {
   const token = req.cookies && req.cookies.sessionToken;

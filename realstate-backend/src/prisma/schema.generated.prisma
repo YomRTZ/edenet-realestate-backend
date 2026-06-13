@@ -2,6 +2,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  engineType = "binary"
 }
 
 datasource db {
@@ -160,6 +161,48 @@ model Property {
   requests          Request[]
 
   @@map("properties")
+}
+
+// Rental models for agreements and payments
+
+enum RentalStatus {
+  Active
+  Terminated
+  Completed
+}
+
+model RentalAgreement {
+  id            String       @id @default(uuid())
+  propertyId    String       @map("property_id")
+  landlordId    String       @map("landlord_id")
+  tenantId      String       @map("tenant_id")
+  monthlyRent   String       @map("monthly_rent")
+  depositAmount String?      @map("deposit_amount")
+  startDate     DateTime?    @map("start_date")
+  durationMonths Int         @map("duration_months")
+  paidMonths    Int          @default(0) @map("paid_months")
+  escrowBalance String?      @map("escrow_balance")
+  status        RentalStatus @default(Active)
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+
+  payments      RentPayment[]
+
+  @@map("rental_agreements")
+  @@index([propertyId])
+  @@index([tenantId])
+}
+
+model RentPayment {
+  id           String    @id @default(uuid())
+  agreementId  String    @map("agreement_id")
+  amount       String
+  paidAt       DateTime  @map("paid_at")
+
+  agreement    RentalAgreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
+
+  @@map("rent_payments")
+  @@index([agreementId])
 }
 
 // REQUESTS (MINT/UPDATE staging)
