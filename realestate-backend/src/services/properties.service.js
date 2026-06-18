@@ -5,23 +5,23 @@ const { hashMetadata } = require('../crypto/metadataHash.service');
 
 class PropertyService {
   async processAndRegisterProperty(fields, files) {
-    // 1. Core Cryptographic hashing computation over uploaded images arrays
+    // Core Cryptographic hashing computation over uploaded images arrays
     const imageFiles = files['images'] || [];
     const imageHashes = imageFiles.map(img => hashBuffer(img.buffer));
     const imagesRootHash = computeRootHash(imageHashes);
 
-    // 2. Core Cryptographic hashing computation over uploaded documents arrays
+    // Core Cryptographic hashing computation over uploaded documents arrays
     const docFiles = files['documents'] || [];
     const docHashes = docFiles.map(doc => hashBuffer(doc.buffer));
     const documentsRootHash = computeRootHash(docHashes);
 
-    // 3. Map Canonical structural schema blueprint object
+    // Map Canonical structural schema blueprint object
     const canonicalMetadata = {
       title: fields.title,
       description: fields.description || '',
       propertyType: fields.property_type,
       listingType: fields.listing_type,
-      price: fields.price, // Handled as string representation for Web3 Wei parameters
+      price: fields.price, 
       bedrooms: parseInt(fields.bedrooms) || 0,
       bathrooms: parseInt(fields.bathrooms) || 0,
       areaSize: parseInt(fields.area_size) || 0,
@@ -40,10 +40,10 @@ class PropertyService {
       documentsRootHash
     };
 
-    // 4. Resolve global target unique identifying tracking code hash signature
+    // Resolve global target unique identifying tracking code hash signature
     const metadataHash = hashMetadata(canonicalMetadata);
 
-    // 5. Structure storage file inputs
+    // Structure storage file inputs
     const filePayloads = [
       ...imageFiles.map((file, i) => ({
         type: 'IMAGE',
@@ -59,9 +59,14 @@ class PropertyService {
       }))
     ];
 
-    // 6. Build persistent entry payload structure
+    //  Build persistent entry payload structure
     const dbPayload = {
       ...canonicalMetadata,
+      // Prisma schema currently requires `name`.
+      // Keep it consistent with the UI/requests by mapping name -> canonical title.
+      name: canonicalMetadata.title,
+      // Prisma model stores geographical data in `city/state/zipCode/country`.
+      // Do not add a `location` field (not present in Prisma schema).
       tokenId: `PENDING-${Date.now()}`,
       ownerWallet: fields.ownerWallet || '0x0000000000000000000000000000000000000000',
       status: 'PENDING',

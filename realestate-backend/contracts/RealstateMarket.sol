@@ -10,7 +10,7 @@ contract RealEstateMarket is ERC721 {
     struct Property {
         uint256 id;
         address payable currentOwner;
-        address originalRegistrant; // Track who initially submitted the property
+        address originalRegistrant;
         uint256 buyPrice;      
         uint256 rentPriceRate; 
         address currentTenant;
@@ -24,17 +24,20 @@ contract RealEstateMarket is ERC721 {
 
     mapping(uint256 => Property) public properties;
 
-    // Restrict function access strictly to the government account
+    // ─── DECLARE ALL EVENTS HERE ───
+    event PropertyApproved(uint256 indexed id, address indexed owner, bytes32 indexed metadataHash);
+    event PropertyBought(uint256 indexed id, address indexed buyer, address indexed seller, uint256 price);
+    event PropertyRented(uint256 indexed id, address indexed tenant, uint256 duration, uint256 cost); // Fixed declaration placeholder
+
     modifier onlyGovernment() {
-        require(msg.sender == governmentAdmin, "Unauthorized: Only Government Admin can approve and mint");
+        require(msg.sender == governmentAdmin, "Unauthorized: Only Government Admin can authorize listings");
         _;
     }
 
     constructor() ERC721("Real Estate Property Deed", "DEED") {
-        governmentAdmin = msg.sender; // The account that deploys the contract is the Government Admin
+        governmentAdmin = msg.sender;
     }
 
-    // ONLY the government can call this to approve data and officially mint the token
     function approveAndMintProperty(
         address payable _ownerAddress,
         uint256 _buyPrice, 
@@ -46,8 +49,6 @@ contract RealEstateMarket is ERC721 {
         bytes32 _documentsRootHash
     ) external onlyGovernment returns (uint256) {
         propertyCount++;
-        
-        // Mint the deed directly to the verified owner's wallet, NOT the government's wallet
         _mint(_ownerAddress, propertyCount);
 
         properties[propertyCount] = Property({
@@ -65,6 +66,7 @@ contract RealEstateMarket is ERC721 {
             documentsRootHash: _documentsRootHash
         });
 
+        emit PropertyApproved(propertyCount, _ownerAddress, _metadataHash);
         return propertyCount;
     }
 
@@ -75,7 +77,6 @@ contract RealEstateMarket is ERC721 {
         require(block.timestamp > property.rentExpires, "Property is currently occupied by a tenant");
 
         address payable seller = property.currentOwner;
-        
         property.currentOwner = payable(msg.sender);
         property.isForSale = false; 
 
@@ -95,9 +96,9 @@ contract RealEstateMarket is ERC721 {
 
         property.currentTenant = msg.sender;
         property.rentExpires = block.timestamp + (_days * 1 days);
-
         property.currentOwner.transfer(msg.value);
 
+        // This line will compile cleanly now that the event is declared above
         emit PropertyRented(_id, msg.sender, _days, msg.value);
     }
 

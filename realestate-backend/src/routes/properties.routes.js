@@ -41,8 +41,8 @@ propertyRouter.post('/', validateSession, upload.fields([{ name: 'images' }, { n
     // Debug logging to pinpoint why POST /api/properties is returning 500
     console.log('[POST /api/properties] handler entered');
 
-    const imagesCount = (req.files && req.files['images']) ? req.files['images'].length : 0;
-    const documentsCount = (req.files && req.files['documents']) ? req.files['documents'].length : 0;
+    const imagesCount = (req.files?.images || []).length;
+    const documentsCount = (req.files?.documents || []).length;
 
     console.log('[POST /api/properties] received', {
       bodyKeys: req.body ? Object.keys(req.body) : [],
@@ -60,8 +60,13 @@ propertyRouter.post('/', validateSession, upload.fields([{ name: 'images' }, { n
 
     const body = req.body;
 
-    const imgHashes = (req.files['images'] || []).map(f => hashBuffer(f.buffer));
-    const docHashes = (req.files['documents'] || []).map(f => hashBuffer(f.buffer));
+    // multer.fields() should populate req.files, but keep this defensive to avoid 500s
+    const imagesFiles = req.files?.images ?? [];
+    const documentsFiles = req.files?.documents ?? [];
+
+    const imgHashes = imagesFiles.map(f => hashBuffer(f.buffer));
+    const docHashes = documentsFiles.map(f => hashBuffer(f.buffer));
+
 
 
     const imagesRootHash = computeRootHash(imgHashes);
@@ -110,11 +115,18 @@ propertyRouter.post('/', validateSession, upload.fields([{ name: 'images' }, { n
 
     const savedData = await prisma.$transaction(async (tx) => {
 
+      if (!req.user?.walletAddress) {
+        throw new Error('Missing req.user.walletAddress');
+      }
+
       const property = await tx.property.create({
         data: {
           tokenId: `PENDING-${Date.now()}`,
-          ownerWallet: req.user.walletAddress.toLowerCase(),
+          ownerWallet: String(req.user.walletAddress).toLowerCase(),
           status: 'PENDING',
+          // NOTE: Prisma generated schema currently requires `name`.
+          // Backend request uses `title`, so map `name` = `title`.
+          name: canonicalMetadata.title,
           title: canonicalMetadata.title,
           description: canonicalMetadata.description,
           propertyType: canonicalMetadata.propertyType,
@@ -124,15 +136,28 @@ propertyRouter.post('/', validateSession, upload.fields([{ name: 'images' }, { n
           state: canonicalMetadata.state,
           zipCode: canonicalMetadata.zipCode,
           country: canonicalMetadata.country,
+          // Prisma model fields:
           metadataHash,
           imagesRootHash,
-          documentsRootHash
+          documentsRootHash,
         }
       });
 
       const fileEntries = [
-        ...(req.files['images'] || []).map((f, i) => ({ propertyId: property.id, type: 'IMAGE', fileName: f.originalname, fileUrl: `/uploads/${f.originalname}`, sha256Hash: imgHashes[i] })),
-        ...(req.files['documents'] || []).map((f, i) => ({ propertyId: property.id, type: 'DOCUMENT', fileName: f.originalname, fileUrl: `/uploads/${f.originalname}`, sha256Hash: docHashes[i] }))
+        ...imagesFiles.map((f, i) => ({
+          propertyId: property.id,
+          type: 'IMAGE',
+          fileName: f.originalname,
+          fileUrl: `/uploads/${f.originalname}`,
+          sha256Hash: imgHashes[i],
+        })),
+        ...documentsFiles.map((f, i) => ({
+          propertyId: property.id,
+          type: 'DOCUMENT',
+          fileName: f.originalname,
+          fileUrl: `/uploads/${f.originalname}`,
+          sha256Hash: docHashes[i],
+        })),
       ];
 
       if (fileEntries.length > 0) await tx.propertyFile.createMany({ data: fileEntries });
